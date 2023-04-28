@@ -51,10 +51,10 @@ function updateMarkers() {
 
     const displayStations = renderStations.filter((s) => {
         return (
-            s.lat > mapBounds.getSouthWest().lat - 0.5 &&
-            s.lat < mapBounds.getNorthEast().lat + 0.5 &&
-            s.lon > mapBounds.getSouthWest().lng - 0.5 &&
-            s.lon < mapBounds.getNorthEast().lng + 0.5
+            s.lat > mapBounds.getSouthWest().lat &&
+            s.lat < mapBounds.getNorthEast().lat &&
+            s.lon > mapBounds.getSouthWest().lng &&
+            s.lon < mapBounds.getNorthEast().lng
         );
     });
 
