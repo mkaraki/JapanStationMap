@@ -1,5 +1,6 @@
-let lastZoom = 14, lastPos = {};
-const map = L.map('map').setView({ lat: 35.6580992222, lng: 139.7413574722 }, 14);
+let defaultMapState = JSON.parse(localStorage.getItem('lastMapState') ?? '[{ lat: 35.6580992222, lng: 139.7413574722 }, 14]');
+let lastZoom = -1, lastPos = {};
+const map = L.map('map').setView(defaultMapState[0], defaultMapState[1]);
 
 L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', {
     attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">地理院タイル</a>'
@@ -34,9 +35,6 @@ function updateMarkers() {
         return;
     }
 
-    lastPos = mapCurrentCenter;
-    lastZoom = mapCurrentZoom;
-
     const mapBounds = map.getBounds();
 
     const renderStations = stations.filter((s) => {
@@ -58,6 +56,11 @@ function updateMarkers() {
     });
     mapVoronoiPolygons = [];
 
+    lastPos = mapCurrentCenter;
+    lastZoom = mapCurrentZoom;
+
+    localStorage.setItem('lastMapState', JSON.stringify([lastPos, lastZoom]));
+
     if (mapCurrentZoom > 12 || renderStations.length < 250) {
         voronoiObjects = voronoi(renderStations.map(function (v) {
             return [v.lat, v.lon];
@@ -67,9 +70,11 @@ function updateMarkers() {
             const popupText = s.station_name + '駅';
 
             //const marker = L.marker([s.lat, s.lon]).addTo(map).bindPopup(s.station_name);
-            const marker = L.circleMarker([s.lat, s.lon], { radius: 7, fillOpacity: 1, attribution: '<a href="https://ekidata.jp/">駅データ．ｊｐ</a>' }).addTo(map);
-            marker.bindPopup(popupText);
-            mapMarkers.push({ station_cd: s.station_cd, marker: marker });
+            if (!mapMarkers.some((v) => v.station_cd === s.station_cd)) {
+                const marker = L.circleMarker([s.lat, s.lon], { radius: 7, fillOpacity: 1, attribution: '<a href="https://ekidata.jp/">駅データ．ｊｐ</a>' }).addTo(map);
+                marker.bindPopup(popupText);
+                mapMarkers.push({ station_cd: s.station_cd, marker: marker });
+            }
 
             if (i in voronoiObjects) {
                 const voronoiPaths = voronoiObjects[i].map((v) => {
@@ -84,5 +89,5 @@ function updateMarkers() {
     }
 }
 
-map.on('move', updateMarkers);
-map.on('zoom', updateMarkers);
+map.on('moveend', updateMarkers);
+map.on('zoomend', updateMarkers);
