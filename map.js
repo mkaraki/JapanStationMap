@@ -5,6 +5,9 @@ L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', {
     attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">地理院タイル</a>'
 }).addTo(map);
 
+const lc = L.control.locate().addTo(map);
+lc.start();
+
 const voronoi = d3.geom.voronoi()
     .clipExtent([[0, 110], [60, 170]]);
 
