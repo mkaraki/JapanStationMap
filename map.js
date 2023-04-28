@@ -49,6 +49,15 @@ function updateMarkers() {
         );
     });
 
+    const displayStations = renderStations.filter((s) => {
+        return (
+            s.lat > mapBounds.getSouthWest().lat - 0.5 &&
+            s.lat < mapBounds.getNorthEast().lat + 0.5 &&
+            s.lon > mapBounds.getSouthWest().lng - 0.5 &&
+            s.lon < mapBounds.getNorthEast().lng + 0.5
+        );
+    });
+
     mapMarkers.forEach((m) => {
         map.removeLayer(m.marker);
     });
@@ -64,7 +73,7 @@ function updateMarkers() {
 
     localStorage.setItem('lastMapState', JSON.stringify([lastPos, lastZoom]));
 
-    if (mapCurrentZoom > 12 || renderStations.length < 250) {
+    if (mapCurrentZoom > 12 || displayStations.length < 150) {
         voronoiObjects = voronoi(renderStations.map(function (v) {
             return [v.lat, v.lon];
         }));
