@@ -1,4 +1,4 @@
-let defaultMapState = JSON.parse(localStorage.getItem('lastMapState') ?? '[{ lat: 35.6580992222, lng: 139.7413574722 }, 14]');
+let defaultMapState = JSON.parse(localStorage.getItem('lastMapState') ?? '[{"lat":35.6580992222,"lng":139.7413574722},14]');
 let lastZoom = -1, lastPos = {};
 const map = L.map('map').setView(defaultMapState[0], defaultMapState[1]);
 
